@@ -125,6 +125,7 @@ contract AzureMarket is Ownable {
      * _price 出价
      */
     function makeOffer(uint _id, uint _price) public payable{
+    	require(summerNFT.isApprovedOrOwner(address(this),_id), 'This NFT is not in market');
         require(msg.value == _price, "The ETH amount should match with the offer Price");
 		
         uint  _currentBestPrice = tokenIdToBestPrice[_id];
@@ -146,7 +147,7 @@ contract AzureMarket is Ownable {
         _Offer[] storage offersOfId = tokenIdToOffers[_id];
         _offerIds.increment();                           
         uint256 newOfferId = _offerIds.current();       
-        offersOfId[offersOfId.length] = _Offer(newOfferId, _id, msg.sender, _price, OfferStatus.available);
+        offersOfId.push(_Offer(newOfferId, _id, msg.sender, _price, OfferStatus.available));
         tokenIdToOffers[_id] = offersOfId;
         OfferIdToTokenId[newOfferId] = _id;
  
@@ -162,6 +163,7 @@ contract AzureMarket is Ownable {
      * _price 出价
      */
     function makeOfferWithUserFunds(uint _id, uint _price) public {
+    	require(summerNFT.isApprovedOrOwner(address(this),_id), 'This NFT is not in market');
         require(userFunds[msg.sender] >= _price, 'The ETH amount should match with the offer Price');
 		
         uint newbalance = userFunds[msg.sender] - _price; 
@@ -186,7 +188,7 @@ contract AzureMarket is Ownable {
         _Offer[] storage offersOfId = tokenIdToOffers[_id];
         _offerIds.increment();                           
         uint256 newOfferId = _offerIds.current();        
-        offersOfId[offersOfId.length] = _Offer(newOfferId, _id, msg.sender, _price, OfferStatus.available);
+        offersOfId.push(_Offer(newOfferId, _id, msg.sender, _price, OfferStatus.available));
         tokenIdToOffers[_id] = offersOfId;
         OfferIdToTokenId[newOfferId] = _id;
  
